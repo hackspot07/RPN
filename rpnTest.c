@@ -87,3 +87,18 @@ void test_evaluate_expression_will_give_and_0(){
 
 	assertEqual(result,1);
 }
+
+void test_RPN_calculator_that_can_evaluate_parentessis_with_multiOperator(){
+	char* expression = "5 1 2 + 4 * + 3 -";
+	int result;
+	result = evaluate(expression);
+	assertEqual(result,14);
+};
+
+void test_RPN_calculator_that_can_evaluate_parentessis_return_7(){
+	int result;
+	char* expression = malloc(sizeof(char*));
+	expression = "2 2 2 * 2 - 3 + + ";
+	result = evaluate(expression);
+	assertEqual(result,7);
+};
