@@ -72,7 +72,7 @@ void test_evaluate_expression_will_give_1002(){
 void test_evaluate_expression_will_give_and_0(){
 	int result;
 	char *expression = malloc(sizeof(char*));
-	expression = "100000 10   1 1 / / /";
+	expression = "100000    10   1 1 / / /";
 	result =  evaluate(expression);
 
 	assertEqual(result,10000);
