@@ -19,7 +19,7 @@ int operate(int first,int second,char operator){
 
 
 int evaluate(char* expression){
-	int i = 0,result,count,data,j=-1;
+	int i = 0,result,count,data,j=-1,last;
 	int* first,*second,length = strlen(expression);
 	char str[256];
 	Stack stack = createStack();
@@ -40,8 +40,14 @@ int evaluate(char* expression){
 			result = operate((int)first, (int)second, str[i]);
 			push(stack,(void*)result);
 		}
+		if(str[i]=='=' && str[i+1]=='='){
+			first = pop(stack);
+			last = atoi(&str[i+2]);
+			return ((int)first==last)?1:0;
+		}
 		i++;
 	}
 
 	return (int)(*stack.top)->data;
 };
+

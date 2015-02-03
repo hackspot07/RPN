@@ -1,11 +1,11 @@
 #include "../StackADT/stack.h"
 #include <stdio.h>
 
-typedef struct Operators ExpOperator;
+typedef struct result Result;
 
-
-struct Operators {
-	int* symbol;
+struct result {
+  int error;
+  int status;
 };
 
 int evaluate(char *expression);

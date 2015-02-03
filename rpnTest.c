@@ -102,3 +102,24 @@ void test_RPN_calculator_that_can_evaluate_parentessis_return_7(){
 	result = evaluate(expression);
 	assertEqual(result,7);
 };
+
+void test_evaluate_expression_will_give_true_return_1(){
+	char *expression = "2 2 2 * 2 - 3 + +  == 7  ";
+	int result = evaluate(expression);
+
+	assertEqual(result,1);
+}
+
+void test_evaluate_expression_will_give_true_return_true(){
+	char *expression = "2 2 2 2 2 * * 2 + + 2 - * == 20";
+	int result = evaluate(expression);
+
+	assertEqual(result,1);
+}
+
+void test_evaluate_expression_will_give_true_also_return_true(){
+	char *expression = "2 2 - 2 2 2 * 2 - - - ==  0";
+	int result = evaluate(expression);
+
+	assertEqual(result,1);
+}
