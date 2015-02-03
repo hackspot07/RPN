@@ -19,7 +19,7 @@ int operate(int first,int second,char operator){
 int evaluate(char* expression){
 	int i = 0,result,count,data,j=0;
 	int* first,*second,length = strlen(expression)+1;
-	char str[256];
+	char* str= malloc(sizeof(length));
 	Stack stack = createStack();
 	strcpy(str,expression);
 
