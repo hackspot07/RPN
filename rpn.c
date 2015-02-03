@@ -18,7 +18,8 @@ int operate(int first,int second,char operator){
 
 
 
-int evaluate(char* expression){
+Result evaluate(char* expression){
+	Result getResult;
 	int i = 0,result,count,data,j=-1,last;
 	int* first,*second,length = strlen(expression);
 	char str[256];
@@ -43,11 +44,12 @@ int evaluate(char* expression){
 		if(str[i]=='=' && str[i+1]=='='){
 			first = pop(stack);
 			last = atoi(&str[i+2]);
-			return ((int)first==last)?1:0;
+			getResult.status = ((int)first==last)?1:0;
+			return getResult;
 		}
 		i++;
 	}
-
-	return (int)(*stack.top)->data;
+	getResult.status = (int)(*stack.top)->data;
+	return getResult;
 };
 

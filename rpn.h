@@ -8,4 +8,4 @@ struct result {
   int status;
 };
 
-int evaluate(char *expression);
+Result evaluate(char *expression);
