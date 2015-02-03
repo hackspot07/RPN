@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+
 int operate(int first,int second,char operator){
 	switch(operator){
 					case '+': return (second + first); break;
@@ -30,7 +32,7 @@ int evaluate(char* expression){
 				push(stack,(void*)data);
 				j = i+1;
 			}
-		}else if(str[i]>=42 && str[i] <=47){
+		}else if(str[i]==42 || str[i] ==43 || str[i] ==45 || str[i] ==47){
 			first = pop(stack);
 			second = pop(stack);
 			result = operate((int)first, (int)second, str[i]);

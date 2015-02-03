@@ -69,11 +69,21 @@ void test_evaluate_expression_will_give_1002(){
 	assertEqual(result,1002);
 }
 
-void test_evaluate_expression_will_give_and_0(){
+void test_evaluate_expression_will_give_and_1000(){
 	int result;
 	char *expression = malloc(sizeof(char*));
 	expression = "100000    10   1 1 / / /";
 	result =  evaluate(expression);
 
 	assertEqual(result,10000);
+}
+
+
+void test_evaluate_expression_will_give_and_0(){
+	int result;
+	char *expression = malloc(sizeof(char*));
+	expression = "2.5    2.5   1  1 / / /";
+	result =  evaluate(expression);
+
+	assertEqual(result,1);
 }
