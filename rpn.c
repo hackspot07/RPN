@@ -15,6 +15,7 @@ int operate(int first,int second,char operator){
 				}
 };
 
+
 void handleOperator(Stack stack,char operator){
 	int* first,*second,result;
 	first = pop(stack);
@@ -23,39 +24,48 @@ void handleOperator(Stack stack,char operator){
 	push(stack,(void*)result);
 };
 
-void handleOperand(Stack stack,char* str,int j,int i){
+void handleOperand(Stack stack,char* str,int j,int index){
 	int data;
-	data = (j<0)? atoi(&str[i]) : atoi(&str[j]);
+	data = (j<0)? atoi(&str[index]) : atoi(&str[j]);
 	push(stack,(void*)data);
+};
+
+int isOperator(char* str,int index){
+	return (str[index]=='-' || str[index] =='*' || str[index] =='/' || str[index] =='+')?1:0;
+};
+
+int isOperand(char* str,int i){
+	return (str[i]>='0' && str[i] <='9')?1:0;
 };
 
 Result evaluate(char* expression){
 	Result getResult;
-	int i = 0,result,count,j=-1,last,operand=0 ,operator=0,status,length = strlen(expression);
-	char str[256];
+	int index = 0,result,count,j=-1,last,operand=0,operator=0,status,length = strlen(expression);
+	char* str = malloc(sizeof(char)*length);
 	Stack stack = createStack();
 	strcpy(str,expression);
 
-	while(i<length){
-		if(str[i]>='0' && str[i] <='9'){
-			(str[i+1]!=' ' && j == -1)?(j = i) : j;
-			if(str[i+1]==' '){ 
+	for(index=0; index<length; index++){
+		if(isOperand(str,index)){
+			(str[index+1]!=' ' && j == -1)?(j = index) : j;
+			if(str[index+1]==' '){ 
 				operand++;
-				handleOperand(stack,str,j,i);
+				handleOperand(stack,str,j,index);
 				j =-1;
 			}
 		}
-		if(str[i]=='-' || str[i] =='*' || str[i] =='/' || str[i] =='+'){
+		if(isOperator(str,index)){
 			operator++;
-			handleOperator(stack,str[i]);
+			handleOperator(stack,str[index]);
 		}
-		i++;
 	}
 	if(operand != operator+1){
 		Result getResult = {0,0};
+		free(str);
 		return getResult;
 	}
 	getResult.error = 1;
 	getResult.status = (int)(*stack.top)->data;
+	free(str);
 	return getResult;
 };

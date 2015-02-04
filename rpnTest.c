@@ -118,7 +118,7 @@ void test_evaluate_expression_will_give_true_return_true(){
 }
 
 void test_evaluate_expression_will_give_true_also_return_true(){
-	char *expression = "2 2 - 2 2 2 * 2 - - -";
+	char *expression = "2 2 - 2 2 2 * 2 - - - -";
 	Result result = evaluate(expression);
 
 	assertEqual(result.status,0);
