@@ -15,12 +15,23 @@ int operate(int first,int second,char operator){
 				}
 };
 
+void handleOperator(Stack stack,char operator){
+	int* first,*second,result;
+	first = pop(stack);
+	second = pop(stack);
+	result = operate((int)first, (int)second, operator);
+	push(stack,(void*)result);
+};
 
+void handleOperand(Stack stack,char* str,int j,int i){
+	int data;
+	data = (j<0)? atoi(&str[i]) : atoi(&str[j]);
+	push(stack,(void*)data);
+};
 
 Result evaluate(char* expression){
 	Result getResult;
-	int i = 0,result,count,data,j=-1,last,operand=0 ,operator=0,status;
-	int* first,*second,length = strlen(expression);
+	int i = 0,result,count,j=-1,last,operand=0 ,operator=0,status,length = strlen(expression);
 	char str[256];
 	Stack stack = createStack();
 	strcpy(str,expression);
@@ -30,17 +41,13 @@ Result evaluate(char* expression){
 			(str[i+1]!=' ' && j == -1)?(j = i) : j;
 			if(str[i+1]==' '){ 
 				operand++;
-				data = (j<0)? atoi(&str[i]) : atoi(&str[j]);
-				push(stack,(void*)data);
+				handleOperand(stack,str,j,i);
 				j =-1;
 			}
 		}
 		if(str[i]=='-' || str[i] =='*' || str[i] =='/' || str[i] =='+'){
 			operator++;
-			first = pop(stack);
-			second = pop(stack);
-			result = operate((int)first, (int)second, str[i]);
-			push(stack,(void*)result);
+			handleOperator(stack,str[i]);
 		}
 		i++;
 	}
@@ -52,29 +59,3 @@ Result evaluate(char* expression){
 	getResult.status = (int)(*stack.top)->data;
 	return getResult;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// if(str[i]=='=' && str[i+1]=='='){
-// 			first = pop(stack);
-// 			last = atoi(&str[i+2]);
-// 			getResult.status = ((int)first==last)?1:0;
-// 			return getResult;
-// 		}
