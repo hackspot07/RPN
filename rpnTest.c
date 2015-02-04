@@ -104,22 +104,30 @@ void test_RPN_calculator_that_can_evaluate_parentessis_return_7(){
 };
 
 void test_evaluate_expression_will_give_true_return_1(){
-	char *expression = "2 2 2 * 2 - 3 + +  == 7  ";
+	char *expression = "2 2 2 * 2 - 3 + +";
 	Result result = evaluate(expression);
 
-	assertEqual(result.status,1);
+	assertEqual(result.status,7);
 }
 
 void test_evaluate_expression_will_give_true_return_true(){
-	char *expression = "2 2 2 2 2 * * 2 + + 2 - * == 20";
+	char *expression = "2 2 2 2 2 * * 2 + + 2 - *";
 	Result result = evaluate(expression);
 
-	assertEqual(result.status,1);
+	assertEqual(result.status,20);
 }
 
 void test_evaluate_expression_will_give_true_also_return_true(){
-	char *expression = "2 2 - 2 2 2 * 2 - - - ==  0";
+	char *expression = "2 2 - 2 2 2 * 2 - - -";
 	Result result = evaluate(expression);
 
-	assertEqual(result.status,1);
+	assertEqual(result.status,0);
 }
+
+void test_RPN_calculator_that_can_evaluate_as_false(){
+	char* expression = "5 1 2 + + + 4 * 5 5 55 5 5 5 + 3 - - / / / /  / / /  / / / ";
+	Result result;
+	result = evaluate(expression);
+	assertEqual(result.error,0);
+	assertEqual(result.status,0);
+};

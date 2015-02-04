@@ -11,16 +11,15 @@ int operate(int first,int second,char operator){
 					case '-': return (second - first);
 					case '*': return (second * first);
 					case '/': return(first)?(second / first):0;
-					default:  printf("Wrong Notation Plz Give Right Notation"); break;
+					default:  return 0;
 				}
-	return -1;
 };
 
 
 
 Result evaluate(char* expression){
 	Result getResult;
-	int i = 0,result,count,data,j=-1,last;
+	int i = 0,result,count,data,j=-1,last,operand=0 ,operator=0;
 	int* first,*second,length = strlen(expression);
 	char str[256];
 	Stack stack = createStack();
@@ -30,26 +29,54 @@ Result evaluate(char* expression){
 		if(str[i]>='0' && str[i] <='9'){
 			(str[i+1]!=' ' && j == -1)?(j = i) : j;
 			if(str[i+1]==' '){ 
+				operand++;
 				data = (j<0)? atoi(&str[i]) : atoi(&str[j]);
 				push(stack,(void*)data);
 				j =-1;
 			}
 		}
 		if(str[i]=='-' || str[i] =='*' || str[i] =='/' || str[i] =='+'){
+			operator++;
 			first = pop(stack);
 			second = pop(stack);
 			result = operate((int)first, (int)second, str[i]);
 			push(stack,(void*)result);
 		}
-		if(str[i]=='=' && str[i+1]=='='){
-			first = pop(stack);
-			last = atoi(&str[i+2]);
-			getResult.status = ((int)first==last)?1:0;
-			return getResult;
-		}
 		i++;
 	}
+	if(operand != operator+1){ 
+		getResult.error  = 0;
+		getResult.status  = 0;
+		return getResult;
+	}
+
 	getResult.status = (int)(*stack.top)->data;
+	getResult.error = 1;
 	return getResult;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// if(str[i]=='=' && str[i+1]=='='){
+// 			first = pop(stack);
+// 			last = atoi(&str[i+2]);
+// 			getResult.status = ((int)first==last)?1:0;
+// 			return getResult;
+// 		}
