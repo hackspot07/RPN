@@ -19,7 +19,7 @@ int operate(int first,int second,char operator){
 
 Result evaluate(char* expression){
 	Result getResult;
-	int i = 0,result,count,data,j=-1,last,operand=0 ,operator=0;
+	int i = 0,result,count,data,j=-1,last,operand=0 ,operator=0,status;
 	int* first,*second,length = strlen(expression);
 	char str[256];
 	Stack stack = createStack();
@@ -44,14 +44,12 @@ Result evaluate(char* expression){
 		}
 		i++;
 	}
-	if(operand != operator+1){ 
-		getResult.error  = 0;
-		getResult.status  = 0;
+	if(operand != operator+1){
+		Result getResult = {0,0};
 		return getResult;
 	}
-
-	getResult.status = (int)(*stack.top)->data;
 	getResult.error = 1;
+	getResult.status = (int)(*stack.top)->data;
 	return getResult;
 };
 

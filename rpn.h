@@ -8,4 +8,9 @@ struct result {
   int status;
 };
 
+struct operand{
+	int count;
+	LinkedList* list;
+};
+
 Result evaluate(char *expression);
