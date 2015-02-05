@@ -1,9 +1,0 @@
-*.o
-*.exe
-*TestRunner.c
-*.exe.*
-*assert.h
-*_h.c
-*._Test.c
-*.sh
-*1.c
