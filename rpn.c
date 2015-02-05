@@ -38,6 +38,12 @@ int isOperand(char* str,int index){
 	return (str[index]>='0' && str[index] <='9')?1:0;
 };
 
+Result isValidExpression(char* str){
+	Result getResult = {0,0};
+	free(str);
+	return getResult;
+};
+
 Result evaluate(char* expression){
 	Result getResult;
 	int index = 0,result,count,j=-1,last,operand=0,operator=0,status,length = strlen(expression)+1;
@@ -59,11 +65,8 @@ Result evaluate(char* expression){
 			handleOperator(stack,str[index]);
 		}
 	}
-	if(operand != operator+1){
-		Result getResult = {0,0};
-		free(str);
-		return getResult;
-	}
+	if(operand != operator+1)
+		return isValidExpression(str);
 	getResult.error = 1;
 	getResult.status = (int)(*stack.top)->data;
 	free(str);
