@@ -98,7 +98,7 @@ void* dQueue(Queue queue){
 void handleOperandForInfix(Queue queueForOperand,char* str,int j,int index){
 	int data;
 	data = (j<0)? atoi(&str[index]) : atoi(&str[j]);
-	nQueue(queueForOperand,&data);
+	nQueue(queueForOperand,((void*)data));
 };
 
 int checkPrecendence(char operator){
@@ -114,25 +114,34 @@ int checkPrecendence(char operator){
 	}
 };
 
-void performBaseedOnOperator(Stack stackForOperators,char operator){
+void performBasedOnOperator(Stack stackForOperators,char operator){
+	Stack temp = createStack();
+	int count = (int)stackForOperators.list->count;
+	int *poped,*pushedAgain;
 	if((int)stackForOperators.list->count==0){
 		push(stackForOperators,&operator);
 	}
-	if((int)stackForOperators.list->count>0){
-		if(checkPrecendence(operator) > checkPrecendence(*(char*)(*stackForOperators.top)->data)){
-			push(stackForOperators,&operator);
-		}else{
-			pop(stackForOperators);
+	if((int)stackForOperators.list->count>0){ 
+		while(checkPrecendence(operator) < checkPrecendence((char)(*stackForOperators.top)->data)){ 
+			poped = pop(stackForOperators);
+			push(temp,(void*)poped);
 		}
-	}
-		
+		push(stackForOperators,&operator);
+		if((int)temp.list->count > 0){
+			while((int)temp.list->count){ 
+				pushedAgain = pop(temp);
+				push(stackForOperators,pushedAgain);
+			}
+		}
+	}	
 };
 
 char * infixToPostfix(char * expression){
-	int i,j=-1,length = strlen(expression)+1;
+	int i,j=-1,length = strlen(expression)+1,queLength,stackLength;
+	int* operand;char* operator;
 	Queue queueForOperand = createQueue();
 	Stack stackForOperators = createStack();
-	char* postfix = malloc(sizeof(char)*length);
+	char* postfix = calloc(sizeof(char),length);
 	char* str = malloc(sizeof(char)*length);
 	strcpy(str,expression);
 
@@ -145,7 +154,18 @@ char * infixToPostfix(char * expression){
 			}
 		}	
 		if(isOperator(str,i))
-			performBaseedOnOperator(stackForOperators,str[i]);
+			performBasedOnOperator(stackForOperators,str[i]);
+	}
+	queLength = (int)queueForOperand.list->count;
+	stackLength = (int)stackForOperators.list->count;
+	for(i=0;i<queLength;i++){
+		operator= dQueue(queueForOperand);
+		printf("%d>>>\n",(int)operator);
+	}
+	for(i=0;i<stackLength;i++){
+		operand = pop(stackForOperators);
+		printf("%d>>>\n",*(char*)operand);
+		*(char*)operand =' ';
 	}
 	return postfix;
 };
