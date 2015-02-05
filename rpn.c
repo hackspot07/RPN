@@ -1,7 +1,7 @@
-#include "rpn.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "rpn.h"
 
 
 
@@ -12,7 +12,7 @@ int operate(int first,int second,char operator){
 					case '*': return (second * first);
 					case '/': return(first)?(second / first):0;
 					default:  return 0;
-				}
+				};
 };
 
 
@@ -34,13 +34,13 @@ int isOperator(char* str,int index){
 	return (str[index]=='-' || str[index] =='*' || str[index] =='/' || str[index] =='+')?1:0;
 };
 
-int isOperand(char* str,int i){
-	return (str[i]>='0' && str[i] <='9')?1:0;
+int isOperand(char* str,int index){
+	return (str[index]>='0' && str[index] <='9')?1:0;
 };
 
 Result evaluate(char* expression){
 	Result getResult;
-	int index = 0,result,count,j=-1,last,operand=0,operator=0,status,length = strlen(expression);
+	int index = 0,result,count,j=-1,last,operand=0,operator=0,status,length = strlen(expression)+1;
 	char* str = malloc(sizeof(char)*length);
 	Stack stack = createStack();
 	strcpy(str,expression);
@@ -68,4 +68,84 @@ Result evaluate(char* expression){
 	getResult.status = (int)(*stack.top)->data;
 	free(str);
 	return getResult;
+};
+
+
+////////////////////////////////version 4.0/////////////////////
+
+Queue createQueue(void){
+	Queue createdQueue;
+	LinkedList* list = calloc(sizeof(LinkedList),1);
+	createdQueue.list = list;
+	createdQueue.front = &(list->head);
+	createdQueue.rear = &(list->tail);
+	return createdQueue;
+};
+
+
+int nQueue(Queue queue, void* data){
+	Node_ptr newNode = create_node(data);
+	int yes = add_to_list(queue.list,newNode);
+	return (yes)?queue.list->count:-1;
+
+	return (int)queue.list->count;
+};
+
+void* dQueue(Queue queue){
+	return deleteElementAt(queue.list,0);
+};
+
+void handleOperandForInfix(Queue queueForOperand,char* str,int j,int index){
+	int data;
+	data = (j<0)? atoi(&str[index]) : atoi(&str[j]);
+	nQueue(queueForOperand,&data);
+};
+
+int checkPrecendence(char operator){
+	switch(operator){
+		case '(': return 1;
+		case ')': return 1;
+		case '-': return 2;
+		case '+': return 2;
+		case '*': return 4;
+		case '/': return 4;
+		case '^': return 6;
+		default : return 0;
+	}
+};
+
+void performBaseedOnOperator(Stack stackForOperators,char operator){
+	if((int)stackForOperators.list->count==0){
+		push(stackForOperators,&operator);
+	}
+	if((int)stackForOperators.list->count>0){
+		if(checkPrecendence(operator) > checkPrecendence(*(char*)(*stackForOperators.top)->data)){
+			push(stackForOperators,&operator);
+		}else{
+			pop(stackForOperators);
+		}
+	}
+		
+};
+
+char * infixToPostfix(char * expression){
+	int i,j=-1,length = strlen(expression)+1;
+	Queue queueForOperand = createQueue();
+	Stack stackForOperators = createStack();
+	char* postfix = malloc(sizeof(char)*length);
+	char* str = malloc(sizeof(char)*length);
+	strcpy(str,expression);
+
+	for(i=0; i<=length; i++){
+		if(isOperand(str,i)){
+			(str[i+1]!=' ' && j == -1)?(j = i) : j;
+			if(str[i]!=' '){ 
+				handleOperandForInfix(queueForOperand,str,j,i);
+				j =-1;
+			}
+		}	
+		if(isOperator(str,i))
+			performBaseedOnOperator(stackForOperators,str[i]);
+	}
+	return postfix;
 };

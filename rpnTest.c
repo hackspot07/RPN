@@ -2,6 +2,7 @@
 #include "expr_assert.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 void test_evaluate_expression_will_give_5(){
@@ -130,4 +131,47 @@ void test_RPN_calculator_that_can_evaluate_as_false(){
 	result = evaluate(expression);
 	assertEqual(result.error,0);
 	assertEqual(result.status,0);
+};
+
+
+///////////////////version 4.0///////////////////////////
+
+void test_createQueue_return_the_frtont_rear_0(){
+	Queue queue = createQueue();
+
+	assertEqual(*(int*)(queue.front),0);
+	assertEqual(*(int*)(queue.rear),0);
+	assertEqual((int)queue.list->count,0);
+};
+
+void test_nQueue_add_23_into_queue_and_return_1(){
+	Queue queue = createQueue();
+	int count,front,rear,data1 = 23,data2=25;
+	count = nQueue(queue,&data1);
+	count = nQueue(queue,&data2);
+
+	assertEqual(count,2);
+	assertEqual(*(int*)(*queue.front)->data,23);
+	assertEqual(*(int*)(*queue.rear)->data,25);
+};
+
+void test_dQueue_delete_23_and_return_it(){
+	Queue queue = createQueue();
+	int* deleted,front,rear,data1 = 23,data2=25;
+	nQueue(queue,&data1);
+	nQueue(queue,&data2);
+	deleted = dQueue(queue);
+
+	assertEqual(*(int*)deleted, 23);
+	assertEqual(*(int*)(*queue.front)->data,25);
+	assertEqual(*(int*)(*queue.rear)->data,25);
+
+};
+
+void test_it_return_infix_topostFix(){
+	char* infix = "2 + 3 * 4";
+	char* postFix = "2 3 4 * +";
+	char* result = infixToPostfix(infix);
+
+	assertEqual(strcmp(result,postFix),0);
 };
