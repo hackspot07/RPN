@@ -30,8 +30,14 @@ void handleOperand(Stack stack,char* str,int j,int index){
 	push(stack,(void*)data);
 };
 
-int isOperator(char* str,int index){
-	return (str[index]=='-' || str[index] =='*' || str[index] =='/' || str[index] =='+')?1:0;
+int isOperator(operator){
+	char operators[] = {'-','+','*','/','^','%','\0'};
+	int i;
+	for(i=0;operators[i]!='\0';i++){ 
+		if(operator == operators[i])
+			return 1;
+	}
+	return 0;
 };
 
 int isOperand(char* str,int index){
@@ -44,9 +50,16 @@ Result isValidExpression(char* str){
 	return getResult;
 };
 
-Result evaluate(char* expression){
+Result getFinalResult(char* str,Stack stack){
 	Result getResult;
-	int index = 0,result,count,j=-1,last,operand=0,operator=0,status,length = strlen(expression)+1;
+	getResult.error = 1;
+	getResult.status = (int)(*stack.top)->data;
+	free(str);
+	return getResult;
+};
+
+Result evaluate(char* expression){
+	int index = 0,j=-1,length = strlen(expression)+1;
 	char* str = malloc(sizeof(char)*length);
 	Stack stack = createStack();
 	strcpy(str,expression);
@@ -55,26 +68,23 @@ Result evaluate(char* expression){
 		if(isOperand(str,index)){
 			(str[index+1]!=' ' && j == -1)?(j = index) : j;
 			if(str[index+1]==' '){ 
-				operand++;
 				handleOperand(stack,str,j,index);
 				j =-1;
 			}
 		}
-		if(isOperator(str,index)){
-			operator++;
+		if(isOperator(str[index])){ 
+			if((int)stack.list->count<2)
+				return isValidExpression(str);
 			handleOperator(stack,str[index]);
 		}
 	}
-	if(operand != operator+1)
-		return isValidExpression(str);
-	getResult.error = 1;
-	getResult.status = (int)(*stack.top)->data;
-	free(str);
-	return getResult;
+	return getFinalResult(str,stack);
 };
 
 
+
 ////////////////////////////////version 4.0/////////////////////
+
 
 Queue createQueue(void){
 	Queue createdQueue;
@@ -156,7 +166,7 @@ char * infixToPostfix(char * expression){
 				j =-1;
 			}
 		}	
-		if(isOperator(str,i))
+		if(isOperator(str[i]))
 			performBasedOnOperator(stackForOperators,str[i]);
 	}
 	queLength = (int)queueForOperand.list->count;
