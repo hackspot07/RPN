@@ -36,6 +36,5 @@ int nQueue(Queue queue, void* data);
 void* dQueue(Queue queue);
 
 
-
 Result evaluate(char *expression);
 char * infixToPostfix(char * expression);

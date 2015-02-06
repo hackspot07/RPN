@@ -11,26 +11,28 @@ int operate(int first,int second,char operator){
 					case '-': return (second - first);
 					case '*': return (second * first);
 					case '/': return(first)?(second / first):0;
-					default:  return 0;
-				};
+					default :  return 0;
+				}
 };
 
 
 void handleOperator(Stack stack,char operator){
-	int* first,*second,result;
-	first = pop(stack);
-	second = pop(stack);
-	result = operate((int)first, (int)second, operator);
+	int* first_val,*second_val;
+	int result;
+	first_val = pop(stack);
+	second_val = pop(stack);
+	result = operate((int)first_val, (int)second_val, operator);
 	push(stack,(void*)result);
 };
 
-void handleOperand(Stack stack,char* str,int j,int index){
+int handleOperand(Stack stack,char* str,int index){
 	int data;
-	data = (j<0)? atoi(&str[index]) : atoi(&str[j]);
+	data = atoi(&str[index]);
 	push(stack,(void*)data);
+	return 1;
 };
 
-int isOperator(operator){
+int isOperator(char operator){
 	char operators[] = {'-','+','*','/','^','%','\0'};
 	int i;
 	for(i=0;operators[i]!='\0';i++){ 
@@ -40,8 +42,8 @@ int isOperator(operator){
 	return 0;
 };
 
-int isOperand(char* str,int index){
-	return (str[index]>='0' && str[index] <='9')?1:0;
+int isOperand(char operand){
+	return (operand>='0' && operand <='9')?1:0;
 };
 
 Result isValidExpression(char* str){
@@ -59,19 +61,14 @@ Result getFinalResult(char* str,Stack stack){
 };
 
 Result evaluate(char* expression){
-	int index = 0,j=-1,length = strlen(expression)+1;
+	int index,length = strlen(expression)+1;
 	char* str = malloc(sizeof(char)*length);
 	Stack stack = createStack();
 	strcpy(str,expression);
 
 	for(index=0; index<length; index++){
-		if(isOperand(str,index)){
-			(str[index+1]!=' ' && j == -1)?(j = index) : j;
-			if(str[index+1]==' '){ 
-				handleOperand(stack,str,j,index);
-				j =-1;
-			}
-		}
+		if(isOperand(str[index]))
+			((str[index-1]==' ' && index!=0) || index==0) ? handleOperand(stack,str,index) : 0;
 		if(isOperator(str[index])){ 
 			if((int)stack.list->count<2)
 				return isValidExpression(str);
@@ -159,26 +156,13 @@ char * infixToPostfix(char * expression){
 	strcpy(str,expression);
 
 	for(i=0; i<=length; i++){
-		if(isOperand(str,i)){
-			(str[i+1]!=' ' && j == -1)?(j = i) : j;
-			if(str[i]!=' '){ 
-				handleOperandForInfix(queueForOperand,str,j,i);
-				j =-1;
-			}
-		}	
+		if(isOperand(str[i]))
+			if((str[i-1]==' ' && i!=0) || i==0)
+				handleOperandForInfix(queueForOperand,str,j,i);	
 		if(isOperator(str[i]))
 			performBasedOnOperator(stackForOperators,str[i]);
 	}
 	queLength = (int)queueForOperand.list->count;
 	stackLength = (int)stackForOperators.list->count;
-	for(i=0;i<queLength;i++){
-		operator= dQueue(queueForOperand);
-		printf("%d>>>\n",(int)operator);
-	}
-	for(i=0;i<stackLength;i++){
-		operand = pop(stackForOperators);
-		printf("%d>>>\n",*(char*)operand);
-		*(char*)operand =' ';
-	}
 	return postfix;
 };

@@ -9,6 +9,7 @@ void test_evaluate_expression_will_give_5(){
 	char *expression = "2 3 +";
 	Result result = evaluate(expression);
 
+	assertEqual(result.error,1);
 	assertEqual(result.status,5);
 }
 
