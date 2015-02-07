@@ -33,7 +33,7 @@ int handleOperand(Stack stack,char* str,int index){
 };
 
 int isOperator(char operator){
-	char operators[] = {'-','+','*','/','^','%','\0'};
+	char* operators = "+-*/%^" ;
 	int i;
 	for(i=0;operators[i]!='\0';i++){ 
 		if(operator == operators[i])
@@ -68,7 +68,7 @@ Result evaluate(char* expression){
 
 	for(index=0; index<length; index++){
 		if(isOperand(str[index]))
-			((str[index-1]==' ' && index!=0) || index==0) ? handleOperand(stack,str,index) : 0;
+			((str[index-1] ==' ' && index!=0) || index==0) ? handleOperand(stack,str,index) : 0;
 		if(isOperator(str[index])){ 
 			if((int)stack.list->count<2)
 				return isValidExpression(str);
@@ -105,16 +105,12 @@ void* dQueue(Queue queue){
 	return deleteElementAt(queue.list,0);
 };
 
-void handleOperandForInfix(Queue queueForOperand,char* str,int j,int index){
-	int data;
-	data = (j<0)? atoi(&str[index]) : atoi(&str[j]);
-	nQueue(queueForOperand,((void*)data));
+void handleOperandForInfix(Queue queueForOperand,char operand){
+	nQueue(queueForOperand,((void*)operand));
 };
 
 int checkPrecendence(char operator){
 	switch(operator){
-		case '(': return 1;
-		case ')': return 1;
 		case '-': return 2;
 		case '+': return 2;
 		case '*': return 4;
@@ -124,45 +120,78 @@ int checkPrecendence(char operator){
 	}
 };
 
-void performBasedOnOperator(Stack stackForOperators,char operator){
-	Stack temp = createStack();
+void handlePrecedence(Stack stackForOperators,Queue queueForOperand, char operator){
+	int *poped_value,pcforOperator,pcforTop;
 	int count = (int)stackForOperators.list->count;
-	int *poped,*pushedAgain;
-	if((int)stackForOperators.list->count==0){
-		push(stackForOperators,&operator);
+	pcforOperator = checkPrecendence(operator);
+	pcforTop =checkPrecendence((int)(*stackForOperators.top)->data);
+	if(pcforOperator <= pcforTop){
+		while(count>0 && (pcforOperator <= pcforTop)){  
+			poped_value = pop(stackForOperators);
+			nQueue(queueForOperand,poped_value);
+			count--;
+		}
 	}
-	if((int)stackForOperators.list->count>0){ 
-		while(checkPrecendence(operator) < checkPrecendence((char)(*stackForOperators.top)->data)){ 
-			poped = pop(stackForOperators);
-			push(temp,(void*)poped);
-		}
-		push(stackForOperators,&operator);
-		if((int)temp.list->count > 0){
-			while((int)temp.list->count){ 
-				pushedAgain = pop(temp);
-				push(stackForOperators,pushedAgain);
-			}
-		}
-	}	
+	push(stackForOperators,(void*)operator);
+};
+
+int isOpenParanthesis(char operator){
+	return (operator == '(')?1:0;
+};
+
+int isCloseParanthesis(char operator){
+	return (operator == ')')?1:0;
+};
+
+char* invalidExpression(){
+	return "invalidExpression";
+};
+
+void performBasedOnOperator(Stack stackForOperators,Queue queueForOperand,char operator){
+	int count = (int)stackForOperators.list->count;
+	(count==0)?push(stackForOperators,(void*)operator):handlePrecedence(stackForOperators,queueForOperand,operator);
+};
+
+void fillRemainsInQueue(Stack stackForOperators,Queue queueForOperand){
+	int* poped;
+	int i,stackLength = (int)stackForOperators.list->count;
+	for(i=0;i<stackLength;i++){
+		poped = pop(stackForOperators);
+		nQueue(queueForOperand,poped);
+	}
+};
+
+char* changeIntoString(Queue queueForOperand){
+	int i,queLength;
+	char* postfix = malloc(sizeof(char)*queLength);
+	queLength = (int)queueForOperand.list->count;
+	for(i=0;i<queLength;i++)
+		postfix[i] = (char)dQueue(queueForOperand);	
+	return postfix;
+};
+
+void handleStringToken(char* str,Queue queueForOperand,Stack stackForOperators,int i){
+	if(isOperand(str[i]))
+		handleOperandForInfix(queueForOperand,str[i]);
+	if(isOperator(str[i]))
+		performBasedOnOperator(stackForOperators,queueForOperand,str[i]);
 };
 
 char * infixToPostfix(char * expression){
-	int i,j=-1,length = strlen(expression)+1,queLength,stackLength;
-	int* operand;char* operator;
+	int i,length = strlen(expression)+1;
 	Queue queueForOperand = createQueue();
 	Stack stackForOperators = createStack();
-	char* postfix = calloc(sizeof(char),length);
 	char* str = malloc(sizeof(char)*length);
 	strcpy(str,expression);
 
-	for(i=0; i<=length; i++){
-		if(isOperand(str[i]))
-			if((str[i-1]==' ' && i!=0) || i==0)
-				handleOperandForInfix(queueForOperand,str,j,i);	
-		if(isOperator(str[i]))
-			performBasedOnOperator(stackForOperators,str[i]);
+	for(i=0; i<length;i++){
+		handleStringToken(str,queueForOperand,stackForOperators,i);
+		if(str[i]=='('){
+			for( ;str[i]!=')';i++)
+				handleStringToken(str,queueForOperand,stackForOperators,i);
+			fillRemainsInQueue(stackForOperators,queueForOperand);
+		}
 	}
-	queLength = (int)queueForOperand.list->count;
-	stackLength = (int)stackForOperators.list->count;
-	return postfix;
+	fillRemainsInQueue(stackForOperators,queueForOperand);
+	return changeIntoString(queueForOperand);
 };

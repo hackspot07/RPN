@@ -171,8 +171,31 @@ void test_dQueue_delete_23_and_return_it(){
 
 void test_it_return_infix_topostFix(){
 	char* infix = "2 + 3 * 4";
-	char* postFix = "2 3 4 * +";
-	char* result = infixToPostfix(infix);
+	char* postFix = "234*+";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
+	
+	assertEqual(strcmp(result,postFix),0);
+	free(result);
+};
+
+void test_it_return_infix_postFix_with_paranthesis(){
+	char* infix = "(2 + 3) * 4";
+	char* postFix = "23+4*";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
 
 	assertEqual(strcmp(result,postFix),0);
+	free(result);
 };
+
+void test_it_return_infix_postFix_with_paranthesis_evaluate(){
+	char* infix = "(2 + 3 + 5) * 4";
+	char* postFix = "23+5+4*";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
+
+	assertEqual(strcmp(result,postFix),0);
+	free(result);
+};
+
