@@ -105,14 +105,18 @@ void* dQueue(Queue queue){
 	return deleteElementAt(queue.list,0);
 };
 
-void handleOperandForInfix(Queue queueForOperand,char operand){
-	char rear;
+int isRearSpace(Queue queueForOperand){
+	char space = ' ',rear; 
 	if((int)queueForOperand.list->count > 0)
 		rear = (char)(*queueForOperand.rear)->data;
+	return (rear==' ')?1:0;
+};
+
+int handleOperandForInfix(Queue queueForOperand,char operand){
 	if(operand==' ') 
-		(rear != ' ')?nQueue(queueForOperand,((void*)operand)):0;
+		return (!isRearSpace(queueForOperand))?nQueue(queueForOperand,((void*)operand)):0;
 	else
-		nQueue(queueForOperand,((void*)operand));
+		return 	nQueue(queueForOperand,((void*)operand));
 };
 
 int checkPrecendence(char operator){
@@ -126,19 +130,30 @@ int checkPrecendence(char operator){
 	}
 };
 
-void handlePrecedence(Stack stackForOperators,Queue queueForOperand, char operator){
-	int *poped_value,pcforOperator,pcforTop;
+int fillSpace(Queue queueForOperand,void* space){
+	return (!isRearSpace(queueForOperand))?nQueue(queueForOperand,space):0;
+};
+
+int popAndFillInQueue(Stack stackForOperators,Queue queueForOperand){
+	int *poped_value;
+	char space = ' '; 
+	poped_value = pop(stackForOperators);
+	fillSpace(queueForOperand,(void*)space);
+	return nQueue(queueForOperand,((void*)poped_value));
+};
+
+int handlePrecedence(Stack stackForOperators,Queue queueForOperand, char operator){
 	int count = (int)stackForOperators.list->count;
-	pcforOperator = checkPrecendence(operator);
-	pcforTop =checkPrecendence((int)(*stackForOperators.top)->data);
-	if(pcforOperator <= pcforTop){
-		while(count>0 && (pcforOperator <= pcforTop)){  
-			poped_value = pop(stackForOperators);
-			nQueue(queueForOperand,poped_value);
+	int pcforOperator = checkPrecendence(operator);
+	int pcforTop = checkPrecendence((int)(*stackForOperators.top)->data);
+
+	if(pcforOperator <= pcforTop){ 
+		while((pcforOperator <= pcforTop) && count>0){  
+			popAndFillInQueue(stackForOperators,queueForOperand);
 			count--;
 		}
 	}
-	push(stackForOperators,(void*)operator);
+	return push(stackForOperators,(void*)operator);
 };
 
 int isOpenParanthesis(char operator){
@@ -153,41 +168,43 @@ char* invalidExpression(){
 	return "invalidExpression";
 };
 
-void performBasedOnOperator(Stack stackForOperators,Queue queueForOperand,char operator){
+int performBasedOnOperator(Stack stackForOperators,Queue queueForOperand,char operator){
 	int count = (int)stackForOperators.list->count;
-	(count==0)?push(stackForOperators,(void*)operator):handlePrecedence(stackForOperators,queueForOperand,operator);
+	return (count==0)?push(stackForOperators,(void*)operator):handlePrecedence(stackForOperators,queueForOperand,operator);
 };
 
 void fillRemainsInQueue(Stack stackForOperators,Queue queueForOperand){
-	int* poped;
-	char space = ' ';
 	int i,stackLength = (int)stackForOperators.list->count;
-	for(i=0;i<stackLength;i++){
-		poped = pop(stackForOperators);
-		nQueue(queueForOperand,(void*)space);
-		nQueue(queueForOperand,poped);
-	}
+	for(i=0;i<stackLength;i++)
+		popAndFillInQueue(stackForOperators,queueForOperand);
 };
 
 
-void handleStringToken(char* str,Queue queueForOperand,Stack stackForOperators,int i){
+int handleStringToken(char* str,Queue queueForOperand,Stack stackForOperators,int i){
 	if(isOperand(str[i]) || str[i]==' ')
-		handleOperandForInfix(queueForOperand,str[i]);
+		return handleOperandForInfix(queueForOperand,str[i]);
 	if(isOperator(str[i]))
-		performBasedOnOperator(stackForOperators,queueForOperand,str[i]);
+		return performBasedOnOperator(stackForOperators,queueForOperand,str[i]);
+	return 0;
 };
 
 char* changeIntoString(Queue queueForOperand){
-	int i,queLength;
+	int i,queLength = (int)queueForOperand.list->count;
 	char* postfix = malloc(sizeof(char)*queLength);
-	queLength = (int)queueForOperand.list->count;
 	for(i=0;i<queLength;i++)
 		postfix[i] = (char)dQueue(queueForOperand);	
 	return postfix;
 };
 
+int handleParanthesis(char* str,Queue queueForOperand,Stack stackForOperators,int i){
+	for( ;str[i]!=')';i++)
+		handleStringToken(str,queueForOperand,stackForOperators,i);
+	fillRemainsInQueue(stackForOperators,queueForOperand);
+	return i;
+};
+
 char * infixToPostfix(char * expression){
-	int i,length = strlen(expression)+1;
+	int i,length = strlen(expression);
 	Queue queueForOperand = createQueue();
 	Stack stackForOperators = createStack();
 	char* str = malloc(sizeof(char)*length);
@@ -195,11 +212,8 @@ char * infixToPostfix(char * expression){
 
 	for(i=0; i<length; i++){
 		handleStringToken(str,queueForOperand,stackForOperators,i);
-		if(str[i]=='('){
-			for( ;str[i]!=')';i++)
-				handleStringToken(str,queueForOperand,stackForOperators,i);
-			fillRemainsInQueue(stackForOperators,queueForOperand);
-		}
+		if(str[i]=='(')
+			i =	handleParanthesis(str,queueForOperand,stackForOperators,i);
 	}
 	fillRemainsInQueue(stackForOperators,queueForOperand);
 	return changeIntoString(queueForOperand);

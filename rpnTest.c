@@ -169,6 +169,67 @@ void test_dQueue_delete_23_and_return_it(){
 
 };
 
+void test_fillspace_return_one_if_value_filled(){
+	Queue queue = createQueue();
+	char space = ' ';
+	assertEqual(fillSpace(queue,(void*)space),1);	
+};
+
+void test_checkPrecedence_return_2_for_plus(){
+	char operators[] = {'+','-','*','/','\0'};
+	assertEqual(checkPrecendence(operators[0]),2);
+	assertEqual(checkPrecendence(operators[1]),2);
+	assertEqual(checkPrecendence(operators[3]),4);
+
+};
+
+void test_isRearSpace_return_1_if_rear_have_space(){
+	Queue queue = createQueue();
+	char space = ' ';
+	nQueue(queue, (void*)space);
+	assertEqual(isRearSpace(queue),1);
+};
+
+void test_isRearSpace_return_0_if_rear_have_novalue(){
+	Queue queue = createQueue();
+	char nospace = '1';
+	nQueue(queue, (void*)nospace);
+	assertEqual(isRearSpace(queue),0);
+};
+
+void test_handleOperandForInfix_rteurn_1_if_there_is_no_space_rear(){
+	Queue queue = createQueue();
+	char operand = '1';
+	assertEqual(handleOperandForInfix(queue,operand),1);
+};
+
+void test_handleOperandForInfix_rteurn_0_if_there_is_space_rear(){
+	Queue queue = createQueue();
+	char space = ' ';
+	nQueue(queue, (void*)space);
+	assertEqual(handleOperandForInfix(queue,space),0);
+};
+
+void test_handleOperandForInfix_rteurn_2_if_there_is_two_diff_values(){
+	Queue queue = createQueue();
+	char space = ' ',operand ='1';
+	nQueue(queue, (void*)operand);
+	assertEqual(handleOperandForInfix(queue,space),2);
+};
+
+void test_popAndFillInQueue_pop_the_value_from_stack_and_fill_into_queue(){
+	Stack stack = createStack();
+	Queue queue = createQueue();
+	char data = '2';
+	push(stack,(void*)data);
+	assertEqual(popAndFillInQueue(stack,queue),2); 
+};
+
+void test_isRearSpace_return_0_if_rear_have_null(){
+	Queue queue = createQueue();
+	assertEqual(isRearSpace(queue),0);
+};
+
 void test_it_return_infix_topostFix(){
 	char* infix = "2 + 3 * 4";
 	char* postFix = "2 3 4 * +";
@@ -195,6 +256,26 @@ void test_it_return_infix_postFix_with_paranthesis_evaluate(){
 	char* result = calloc(strlen(postFix)+1,sizeof(char));
 	result = infixToPostfix(infix);
 
+	assertEqual(strcmp(result,postFix),0);
+	free(result);
+};
+
+void test_it_return_postFix_with_paranthesis_evaluate(){
+	char* infix = "5 + 7 * 4 - 1";
+	char* postFix = "5 7 4 * + 1 -";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
+	
+	assertEqual(strcmp(result,postFix),0);
+	free(result);
+};
+
+void test_it_return_postFix_with_paranthesis_evaluate_with_following(){
+	char* infix = "(5 + (7 * 4)) - 1";
+	char* postFix = "5 7 4 * + 1 -";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
+	
 	assertEqual(strcmp(result,postFix),0);
 	free(result);
 };
