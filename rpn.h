@@ -17,20 +17,6 @@ struct queue {
 	LinkedList* list;
 };
 
-// struct token{
-// 	void* data;
-// 	Token_ptr next;
-// 	void* functionPonter;
-// };
-
-// struct rpn_list{
-// 	int count;
-// 	Token_ptr head;
-// 	Token_ptr tail;
-// };
-
-
-
 Queue createQueue(void);
 int nQueue(Queue queue, void* data);
 void* dQueue(Queue queue);
