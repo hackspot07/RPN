@@ -97,8 +97,6 @@ int nQueue(Queue queue, void* data){
 	Node_ptr newNode = create_node(data);
 	int yes = add_to_list(queue.list,newNode);
 	return (yes)?queue.list->count:-1;
-
-	return (int)queue.list->count;
 };
 
 void* dQueue(Queue queue){
