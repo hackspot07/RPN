@@ -265,7 +265,7 @@ void test_it_return_postFix_with_paranthesis_evaluate(){
 	char* postFix = "5 7 4 * + 1 -";
 	char* result = calloc(strlen(postFix)+1,sizeof(char));
 	result = infixToPostfix(infix);
-	
+
 	assertEqual(strcmp(result,postFix),0);
 	free(result);
 };
@@ -273,6 +273,15 @@ void test_it_return_postFix_with_paranthesis_evaluate(){
 void test_it_return_postFix_with_paranthesis_evaluate_with_following(){
 	char* infix = "(5 + (7 * 4)) - 1";
 	char* postFix = "5 7 4 * + 1 -";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
+	
+	assertEqual(strcmp(result,postFix),0);
+	free(result);
+};
+void test_it_return_postFix_with_paranthesis_evaluate_with_following_post(){
+	char* infix = "(5 + 7) * (4 - 1)";
+	char* postFix = "5 7 + 4 1 - *";
 	char* result = calloc(strlen(postFix)+1,sizeof(char));
 	result = infixToPostfix(infix);
 	

@@ -135,7 +135,7 @@ int fillSpace(Queue queueForOperand,void* space){
 };
 
 int popAndFillInQueue(Stack stackForOperators,Queue queueForOperand){
-	int *poped_value;
+	char *poped_value;
 	char space = ' '; 
 	poped_value = pop(stackForOperators);
 	fillSpace(queueForOperand,(void*)space);
@@ -145,27 +145,14 @@ int popAndFillInQueue(Stack stackForOperators,Queue queueForOperand){
 int handlePrecedence(Stack stackForOperators,Queue queueForOperand, char operator){
 	int count = (int)stackForOperators.list->count;
 	int pcforOperator = checkPrecendence(operator);
-	int pcforTop = checkPrecendence((int)(*stackForOperators.top)->data);
+	int pcforTop = checkPrecendence((char)(*stackForOperators.top)->data);
 
-	if(pcforOperator <= pcforTop){ 
+	if(pcforOperator <= pcforTop)
 		while((pcforOperator <= pcforTop) && count>0){  
 			popAndFillInQueue(stackForOperators,queueForOperand);
 			count--;
 		}
-	}
 	return push(stackForOperators,(void*)operator);
-};
-
-int isOpenParanthesis(char operator){
-	return (operator == '(')?1:0;
-};
-
-int isCloseParanthesis(char operator){
-	return (operator == ')')?1:0;
-};
-
-char* invalidExpression(){
-	return "invalidExpression";
 };
 
 int performBasedOnOperator(Stack stackForOperators,Queue queueForOperand,char operator){
@@ -197,9 +184,10 @@ char* changeIntoString(Queue queueForOperand){
 };
 
 int handleParanthesis(char* str,Queue queueForOperand,Stack stackForOperators,int i){
+	Stack stackTemp = createStack();
 	for( ;str[i]!=')';i++)
-		handleStringToken(str,queueForOperand,stackForOperators,i);
-	fillRemainsInQueue(stackForOperators,queueForOperand);
+		handleStringToken(str,queueForOperand,stackTemp,i);
+	fillRemainsInQueue(stackTemp,queueForOperand);
 	return i;
 };
 
