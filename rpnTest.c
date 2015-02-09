@@ -197,32 +197,32 @@ void test_isRearSpace_return_0_if_rear_have_novalue(){
 	assertEqual(isRearSpace(queue),0);
 };
 
-void test_handleOperandForInfix_rteurn_1_if_there_is_no_space_rear(){
+void test_handleOperandInPostFix_rteurn_1_if_there_is_no_space_rear(){
 	Queue queue = createQueue();
 	char operand = '1';
-	assertEqual(handleOperandForInfix(queue,operand),1);
+	assertEqual(handleOperandInPostFix(queue,operand),1);
 };
 
 void test_handleOperandForInfix_rteurn_0_if_there_is_space_rear(){
 	Queue queue = createQueue();
 	char space = ' ';
 	nQueue(queue, (void*)space);
-	assertEqual(handleOperandForInfix(queue,space),0);
+	assertEqual(handleOperandInPostFix(queue,space),0);
 };
 
-void test_handleOperandForInfix_rteurn_2_if_there_is_two_diff_values(){
+void test_handleOperandInPostFix_rteurn_2_if_there_is_two_diff_values(){
 	Queue queue = createQueue();
 	char space = ' ',operand ='1';
 	nQueue(queue, (void*)operand);
-	assertEqual(handleOperandForInfix(queue,space),2);
+	assertEqual(handleOperandInPostFix(queue,space),2);
 };
 
-void test_popAndFillInQueue_pop_the_value_from_stack_and_fill_into_queue(){
+void test_shiftOneElementFromStackToQueue_pop_the_value_from_stack_and_fill_into_queue(){
 	Stack stack = createStack();
 	Queue queue = createQueue();
 	char data = '2';
 	push(stack,(void*)data);
-	assertEqual(popAndFillInQueue(stack,queue),2); 
+	assertEqual(shiftOneElementFromStackToQueue(stack,queue),2); 
 };
 
 void test_isRearSpace_return_0_if_rear_have_null(){
@@ -289,3 +289,22 @@ void test_it_return_postFix_with_paranthesis_evaluate_with_following_post(){
 	free(result);
 };
 
+void test_it_return_postFix_with_paranthesis_evaluate_with_following_post_result_will_be_12(){
+	char* infix = "(5 + 7) * (4 - 1) / (9 / 3)";
+	char* postFix = "5 7 + 4 1 - * 9 3 / /";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
+	
+	assertEqual(strcmp(result,postFix),0);
+	free(result);
+};
+
+void test_it_return_postFix_with_paranthesis_evaluate_with_following_post_result_will_be_0(){
+	char* infix = "((5 + 7) * (4 - 1)) / (3 / 9 * 6)";
+	char* postFix = "5 7 + 4 1 - * 3 9 / 6 * /";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
+	
+	assertEqual(strcmp(result,postFix),0);
+	free(result);
+};

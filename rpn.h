@@ -38,8 +38,8 @@ void* dQueue(Queue queue);
 int fillSpace(Queue queue,void* data);
 int checkPrecendence(char operatorr);
 int isRearSpace(Queue queue);
-int handleOperandForInfix(Queue queue,char operand);
-int popAndFillInQueue(Stack stack,Queue queue);
+int handleOperandInPostFix(Queue queue,char operand);
+int shiftOneElementFromStackToQueue(Stack stack,Queue queue);
 
 Result evaluate(char *expression);
 char * infixToPostfix(char * expression);
