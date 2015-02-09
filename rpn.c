@@ -150,10 +150,11 @@ int handlePrecedence(Stack stackForOperators,Queue queueForOperand, char operato
 	int count = (int)stackForOperators.list->count;
 	int pcforOperator = checkPrecendence(operator);
 	int pcforTop = checkPrecendence((char)(*stackForOperators.top)->data);
-
 	if(pcforOperator <= pcforTop)
-		while((pcforOperator <= pcforTop) && count>0){  
+		while((pcforOperator <= pcforTop) && count>0){ 
 			shiftOneElementFromStackToQueue(stackForOperators,queueForOperand);
+			if(count>1)
+				pcforTop = checkPrecendence((char)(*stackForOperators.top)->data);
 			count--;
 		}
 	return push(stackForOperators,(void*)operator);
@@ -183,7 +184,7 @@ char* changeIntoString(Queue queueForOperand){
 
 int handleParanthesis(char* str,Queue queueForOperand,Stack stackForOperators,int index){
 	Stack stackTemp = createStack();
-	for( ;str[index]!=')';index++)
+	for( ;str[index]!=')';index++) 
 		handleToken(str,queueForOperand,stackTemp,index);
 	stackToQueueShift(stackTemp,queueForOperand);
 	return index;

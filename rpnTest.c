@@ -255,7 +255,7 @@ void test_it_return_infix_postFix_with_paranthesis_evaluate(){
 	char* postFix = "2 3 + 5 + 4 *";
 	char* result = calloc(strlen(postFix)+1,sizeof(char));
 	result = infixToPostfix(infix);
-
+	
 	assertEqual(strcmp(result,postFix),0);
 	free(result);
 };
@@ -308,3 +308,12 @@ void test_it_return_postFix_with_paranthesis_evaluate_with_following_post_result
 	assertEqual(strcmp(result,postFix),0);
 	free(result);
 };
+
+void test_49_convert_it_to_an_equivalent_valid_Postfix_expression(){
+	char *result;
+	char *expression = "3 + 4 * 2 / (1 - 5) ^ 2";
+	char *expected="3 4 2 * 1 5 - 2 ^ / +";
+	result = infixToPostfix(expression);
+
+	assertEqual(strcmp(result,expected),0);
+}
