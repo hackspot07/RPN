@@ -300,7 +300,7 @@ void test_it_return_postFix_with_paranthesis_evaluate_with_following_post_result
 };
 
 void test_it_return_postFix_with_paranthesis_evaluate_with_following_post_result_will_be_0(){
-	char* infix = "[((5 + 7)] * (4 - 1)) / (3 / 9 * 6)";
+	char* infix = "((5 + 7) * (4 - 1)) / (3 / 9 * 6)";
 	char* postFix = "5 7 + 4 1 - * 3 9 / 6 * /";
 	char* result = calloc(strlen(postFix)+1,sizeof(char));
 	result = infixToPostfix(infix);
@@ -311,9 +311,28 @@ void test_it_return_postFix_with_paranthesis_evaluate_with_following_post_result
 
 void test_49_convert_it_to_an_equivalent_valid_Postfix_expression(){
 	char *result;
-	char *expression = "3 + [4 *2 / ((1 - 5))] ^ 2";
+	char *expression = "3 + 4 *2 / ((1 - 5)) ^ 2";
 	char *expected="3 4 2 * 1 5 - 2 ^ / +";
 	result = infixToPostfix(expression);
 
 	assertEqual(strcmp(result,expected),0);
 }
+
+void test_will_return_after_handle_minus_digits(){
+	char* infix = "-423 + 200 * -12";
+	char* postFix = "-423 200 -12 * +";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
+	assertEqual(strcmp(result,postFix),0);
+	free(result);
+}
+
+
+void test_will_return_after_remove_the_plus(){
+	char* infix = "-423 + +200 * +12";
+	char* postFix = "-423 200 12 * +";
+	char* result = calloc(strlen(postFix)+1,sizeof(char));
+	result = infixToPostfix(infix);
+	assertEqual(strcmp(result,postFix),0);
+	free(result);
+};

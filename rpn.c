@@ -103,10 +103,10 @@ void* dQueue(Queue queue){
 	return deleteElementAt(queue.list,0);
 };
 
-int isRearSpace(Queue queueForOperand){
+int isRearSpace(Queue tokenQueue){
 	char space = ' ',rear; 
-	if((int)queueForOperand.list->count > 0)
-		rear = (char)(*queueForOperand.rear)->data;
+	if((int)tokenQueue.list->count > 0)
+		rear = (char)(*tokenQueue.rear)->data;
 	return (rear==' ')?1:0;
 };
 
@@ -116,11 +116,11 @@ void stackToQueueShift(Stack stack,Queue queue){
 		shiftOneElementFromStackToQueue(stack,queue);
 };
 
-int handleOperandInPostFix(Queue queueForOperand,char operand){
+int handleOperandInPostFix(Queue tokenQueue,char operand){
 	if(operand==' ') 
-		return (!isRearSpace(queueForOperand))?nQueue(queueForOperand,((void*)operand)):0;
+		return (!isRearSpace(tokenQueue))?nQueue(tokenQueue,((void*)operand)):0;
 	else
-		return 	nQueue(queueForOperand,((void*)operand));
+		return 	nQueue(tokenQueue,((void*)operand));
 };
 
 int checkPrecendence(char operator){
@@ -134,25 +134,25 @@ int checkPrecendence(char operator){
 	}
 };
 
-int fillSpace(Queue queueForOperand,void* space){
-	return (!isRearSpace(queueForOperand))?nQueue(queueForOperand,space):0;
+int fillSpace(Queue tokenQueue,void* space){
+	return (!isRearSpace(tokenQueue))?nQueue(tokenQueue,space):0;
 };
 
-int shiftOneElementFromStackToQueue(Stack stackForOperators,Queue queueForOperand){
+int shiftOneElementFromStackToQueue(Stack stackForOperators,Queue tokenQueue){
 	char *poped_value;
 	char space = ' '; 
 	poped_value = pop(stackForOperators);
-	fillSpace(queueForOperand,(void*)space);
-	return nQueue(queueForOperand,((void*)poped_value));
+	fillSpace(tokenQueue,(void*)space);
+	return nQueue(tokenQueue,((void*)poped_value));
 };
 
-int handlePrecedence(Stack stackForOperators,Queue queueForOperand, char operator){
+int handlePrecedence(Stack stackForOperators,Queue tokenQueue, char operator){
 	int count = (int)stackForOperators.list->count;
 	int pcforOperator = checkPrecendence(operator);
 	int pcforTop = checkPrecendence((char)(*stackForOperators.top)->data);
 	if(pcforOperator <= pcforTop)
 		while((pcforOperator <= pcforTop) && count>0){ 
-			shiftOneElementFromStackToQueue(stackForOperators,queueForOperand);
+			shiftOneElementFromStackToQueue(stackForOperators,tokenQueue);
 			if(count>1)
 				pcforTop = checkPrecendence((char)(*stackForOperators.top)->data);
 			count--;
@@ -160,48 +160,59 @@ int handlePrecedence(Stack stackForOperators,Queue queueForOperand, char operato
 	return push(stackForOperators,(void*)operator);
 };
 
-int handleOperators(Stack stackForOperators,Queue queueForOperand,char operator){
+int handleOperators(Stack stackForOperators,Queue tokenQueue,char operator){
 	int count = (int)stackForOperators.list->count;
-	return (count==0)?push(stackForOperators,(void*)operator):handlePrecedence(stackForOperators,queueForOperand,operator);
+	return (count==0)?push(stackForOperators,(void*)operator):handlePrecedence(stackForOperators,tokenQueue,operator);
 };
 
 
-int handleToken(char* str,Queue queueForOperand,Stack stackForOperators,int i){
+int handleToken(char* str,Queue tokenQueue,Stack stackForOperators,int i){
 	if(isOperand(str[i]) || str[i]==' ')
-		return handleOperandInPostFix(queueForOperand,str[i]);
+		return handleOperandInPostFix(tokenQueue,str[i]);
 	if(isOperator(str[i]))
-		return handleOperators(stackForOperators,queueForOperand,str[i]);
+		return handleOperators(stackForOperators,tokenQueue,str[i]);
 	return 0;
 };
 
-char* changeIntoString(Queue queueForOperand){
-	int i,queLength = (int)queueForOperand.list->count;
+char* changeIntoString(Queue tokenQueue){
+	int i,queLength = (int)tokenQueue.list->count;
 	char* postfix = malloc(sizeof(char)*queLength);
 	for(i=0;i<queLength;i++)
-		postfix[i] = (char)dQueue(queueForOperand);	
+		postfix[i] = (char)dQueue(tokenQueue);	
 	return postfix;
 };
 
-int handleParanthesis(char* str,Queue queueForOperand,Stack stackForOperators,int index){
+int handleParanthesis(char* str,Queue tokenQueue,Stack stackForOperators,int index){
 	Stack stackTemp = createStack();
 	for( ;str[index]!=')';index++) 
-		handleToken(str,queueForOperand,stackTemp,index);
-	stackToQueueShift(stackTemp,queueForOperand);
+		handleToken(str,tokenQueue,stackTemp,index);
+	stackToQueueShift(stackTemp,tokenQueue);
 	return index;
+};
+
+int handleMinusDigits(char* str,Queue tokenQueue,int i){
+	if(str[i]=='-' || str[i]=='+')
+		if(isOperand(str[i+1])){ 
+			(str[i]=='+')?handleOperandInPostFix(tokenQueue,str[i+1]):
+			(handleOperandInPostFix(tokenQueue,str[i]) && handleOperandInPostFix(tokenQueue,str[i+1]));
+			i = i+2;
+		}
+	return i;
 };
 
 char * infixToPostfix(char * expression){
 	int i,length = strlen(expression)+1;
-	Queue queueForOperand = createQueue();
+	Queue tokenQueue = createQueue();
 	Stack stackForOperators = createStack();
 	char* str = malloc(sizeof(char)*length);
 	strcpy(str,expression);
 
 	for(i=0; i<length; i++){
-		handleToken(str,queueForOperand,stackForOperators,i);
+		i = handleMinusDigits(str,tokenQueue,i);
+		handleToken(str,tokenQueue,stackForOperators,i);
 		if(str[i]=='(')
-			i =	handleParanthesis(str,queueForOperand,stackForOperators,i);
+			i =	handleParanthesis(str,tokenQueue,stackForOperators,i);
 	}
-	stackToQueueShift(stackForOperators,queueForOperand);
-	return changeIntoString(queueForOperand);
+	stackToQueueShift(stackForOperators,tokenQueue);
+	return changeIntoString(tokenQueue);
 };
